@@ -1,0 +1,21 @@
+import { Suspense } from "react";
+import { connection } from "next/server";
+
+import FinancePage from "@/features/finance/components/FinancePage";
+import { getFinancePageData } from "@/features/finance/services/finance.service";
+
+async function FinanceContent() {
+  await connection();
+
+  const data = await getFinancePageData();
+
+  return <FinancePage data={data} />;
+}
+
+export default function FinanceRoute() {
+  return (
+    <Suspense fallback={null}>
+      <FinanceContent />
+    </Suspense>
+  );
+}
