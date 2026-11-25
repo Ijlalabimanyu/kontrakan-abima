@@ -16,9 +16,9 @@ export type { StatCardProps, StatCardTone, StatCardTrend } from "./StatCard";
 export { default as Select } from "./Select";
 export type { SelectProps } from "./Select";
 
-export { default as DatePicker, RangePicker } from "./Datepicker";
+export { default as DatePicker, RangePicker } from "./DatePicker";
 
-export type { DatePickerProps, RangePickerProps } from "./Datepicker";
+export type { DatePickerProps, RangePickerProps } from "./DatePicker";
 
 export { default as Modal } from "./Modal";
 export type { ModalProps } from "./Modal";
