@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import SettingsPageClient from "@/features/settings/components/SettingsPageClient";
-import { getSettingsPageData } from "@/features/settings/services/settings.service";
+import SettingsPageClient from "@/features/settings/SettingsPageClient";
+import { getSettingsPageData } from "@/services/settings/service";
 
 async function SettingsContent() {
   await connection();

@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import { getProperties } from "@/features/properties/services/property.service";
-import PropertyTable from "@/features/properties/components/PropertyTable";
+import { getProperties } from "@/services/properties/property.service";
+import PropertyTable from "@/features/properties/PropertyTable";
 
 async function PropertiesContent() {
   await connection();

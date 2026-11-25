@@ -1,11 +1,11 @@
 "use server";
 
-import { PropertyFormValues } from "@/features/properties/interfaces/property.interface";
+import { PropertyFormValues } from "@/services/properties/property.interface";
 import {
   createProperty,
   deleteProperty,
   updateProperty,
-} from "@/features/properties/services/property.service";
+} from "@/services/properties/property.service";
 import { revalidatePath } from "next/cache";
 
 export interface PropertyActionResult {

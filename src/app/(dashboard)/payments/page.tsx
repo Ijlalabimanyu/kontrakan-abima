@@ -1,8 +1,8 @@
-import PaymentTable from "@/features/payments/components/PaymentTable";
+import PaymentTable from "@/features/payments/PaymentTable";
 import {
   getPayableInvoices,
   getPayments,
-} from "@/features/payments/services/payment.service";
+} from "@/services/payments/payment.service";
 
 export default async function PaymentsPage() {
   const [payments, payableInvoices] = await Promise.all([

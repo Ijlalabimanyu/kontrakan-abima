@@ -1,26 +1,246 @@
 @import "tailwindcss";
 
+/* =========================================
+   DESIGN TOKENS
+   Design Direction: Quiet Premium
+========================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  /* Brand */
+  --ka-brand-primary: #173f35;
+  --ka-brand-secondary: #2e6654;
+  --ka-brand-soft: #dde8df;
+
+  /* Accent */
+  --ka-accent: #b79a68;
+
+  /* Background & Surface */
+  --ka-background: #f6f4ee;
+  --ka-surface: #ffffff;
+  --ka-surface-secondary: #f6f4ee;
+
+  /* Text */
+  --ka-text-primary: #202c26;
+  --ka-text-secondary: #68756d;
+  --ka-text-disabled: #a5ada7;
+
+  /* Border */
+  --ka-border: #e6e3d9;
+
+  /* Semantic Colors */
+  --ka-success: #2d7b57;
+  --ka-warning: #b77a2b;
+  --ka-danger: #b84d4d;
+  --ka-info: #2e6654;
+
+  /* Radius */
+  --ka-radius-sm: 8px;
+  --ka-radius-md: 12px;
+  --ka-radius-lg: 16px;
+  --ka-radius-xl: 20px;
+  --ka-radius-full: 999px;
+
+  /* Spacing */
+  --ka-space-1: 4px;
+  --ka-space-2: 8px;
+  --ka-space-3: 12px;
+  --ka-space-4: 16px;
+  --ka-space-6: 24px;
+  --ka-space-8: 32px;
+
+  /* Shadows */
+  --ka-shadow-sm: 0 1px 2px rgb(32 44 38 / 5%);
+  --ka-shadow-md: 0 4px 12px rgb(32 44 38 / 6%);
+  --ka-shadow-lg: 0 12px 32px rgb(32 44 38 / 8%);
+
+  /* Application */
+  --background: var(--ka-background);
+  --foreground: var(--ka-text-primary);
+
+  /* Semantic soft surfaces */
+  --ka-success-soft: #eaf4ee;
+  --ka-warning-soft: #fbf2e5;
+  --ka-danger-soft: #faecec;
+  --ka-info-soft: #eaf1ef;
+  --ka-neutral-soft: #f1f2ef;
 }
+
+/* =========================================
+   TAILWIND CSS 4 THEME
+========================================= */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope);
+
+  --color-background: var(--ka-background);
+  --color-surface: var(--ka-surface);
+  --color-surface-secondary: var(--ka-surface-secondary);
+
+  --color-foreground: var(--ka-text-primary);
+  --color-text-primary: var(--ka-text-primary);
+  --color-muted: var(--ka-text-secondary);
+  --color-disabled: var(--ka-text-disabled);
+
+  --color-brand-primary: var(--ka-brand-primary);
+  --color-brand-secondary: var(--ka-brand-secondary);
+  --color-brand-soft: var(--ka-brand-soft);
+
+  --color-accent: var(--ka-accent);
+
+  --color-border: var(--ka-border);
+
+  --color-success: var(--ka-success);
+  --color-warning: var(--ka-warning);
+  --color-danger: var(--ka-danger);
+  --color-info: var(--ka-info);
+
+  --radius-sm: var(--ka-radius-sm);
+  --radius-md: var(--ka-radius-md);
+  --radius-lg: var(--ka-radius-lg);
+  --radius-xl: var(--ka-radius-xl);
+  --radius-full: var(--ka-radius-full);
+
+  --color-success-soft: var(--ka-success-soft);
+  --color-warning-soft: var(--ka-warning-soft);
+  --color-danger-soft: var(--ka-danger-soft);
+  --color-info-soft: var(--ka-info-soft);
+  --color-neutral-soft: var(--ka-neutral-soft);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* =========================================
+   GLOBAL STYLES
+========================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
+  min-height: 100vh;
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), Arial, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: var(--ka-brand-soft);
+  color: var(--ka-brand-primary);
+}
+
+/* =========================================
+   GLOBAL LAYOUT
+========================================= */
+
+/* Sidebar menu */
+.ka-sidebar-menu {
+  background: transparent !important;
+  font-family: var(--font-manrope), Arial, sans-serif;
+}
+
+.ka-sidebar-menu .ant-menu-item-group-title {
+  padding: 14px 16px 6px !important;
+  color: var(--ka-text-disabled) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em;
+}
+
+.ka-sidebar-menu .ant-menu-item {
+  width: calc(100% - 16px) !important;
+  height: 42px !important;
+  margin: 3px 8px !important;
+  border-radius: 9px !important;
+  line-height: 42px !important;
+  color: var(--ka-text-secondary);
+}
+
+.ka-sidebar-menu .ant-menu-item:hover {
+  background: var(--ka-neutral-soft) !important;
+  color: var(--ka-brand-primary) !important;
+}
+
+.ka-sidebar-menu .ant-menu-item-selected {
+  background: var(--ka-brand-soft) !important;
+  color: var(--ka-brand-primary) !important;
+  font-weight: 700 !important;
+}
+
+.ka-sidebar-menu .ant-menu-item-selected a {
+  color: var(--ka-brand-primary) !important;
+}
+
+.ka-sidebar-menu .ant-menu-item .ant-menu-item-icon {
+  color: inherit;
+}
+
+/* Collapsed sidebar */
+.ka-sidebar-menu.ant-menu-inline-collapsed {
+  width: 100% !important;
+}
+
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item {
+  width: 48px !important;
+  margin-inline: auto !important;
+}
+
+/* Layout overflow */
+body {
+  overflow-x: hidden;
+}
+
+/* =========================================
+   DATA TABLE
+========================================= */
+
+.ka-data-table {
+  color: var(--ka-text-primary);
+}
+
+.ka-data-table .ant-table {
+  background: var(--ka-surface);
+  font-family: var(--font-manrope), Arial, sans-serif;
+}
+
+.ka-data-table .ant-table-thead > tr > th {
+  background: var(--ka-neutral-soft) !important;
+  color: var(--ka-text-secondary) !important;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--ka-border) !important;
+}
+
+.ka-data-table .ant-table-tbody > tr > td {
+  color: var(--ka-text-primary);
+  font-size: 13px;
+  border-bottom: 1px solid var(--ka-border);
+}
+
+.ka-data-table .ant-table-tbody > tr.ant-table-row:hover > td {
+  background: var(--ka-brand-soft) !important;
+}
+
+.ka-data-table .ant-table-container {
+  border-radius: var(--ka-radius-lg);
+}
+
+.ka-data-table .ant-empty-description {
+  color: var(--ka-text-secondary);
 }

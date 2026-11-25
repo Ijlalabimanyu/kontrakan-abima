@@ -1,5 +1,5 @@
-import InvoiceTable from "@/features/invoices/components/InvoiceTable";
-import { getInvoices } from "@/features/invoices/services/invoice.service";
+import InvoiceTable from "@/features/invoices/InvoiceTable";
+import { getInvoices } from "@/services/invoices/service";
 
 export default async function InvoicesPage() {
   const invoices = await getInvoices();

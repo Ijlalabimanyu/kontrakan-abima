@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { contractSchema } from "@/features/contracts/schemas/contract.schema";
+import { contractSchema } from "@/services/contract/schema";
 
 export interface ContractActionState {
   success: boolean;

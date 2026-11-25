@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import DashboardView from "@/features/dashboard/components/DashboardView";
-import { getDashboardAnalytics } from "@/features/dashboard/services/dashboard.service";
+import DashboardView from "@/features/dashboard/DashboardView";
+import { getDashboardAnalytics } from "@/services/dashboard/service";
 
 async function DashboardContent() {
   await connection();

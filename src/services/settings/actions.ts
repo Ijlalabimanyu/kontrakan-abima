@@ -7,14 +7,14 @@ import type {
   OwnerProfileFormValues,
   PaymentAccountFormValues,
   PreferenceFormValues,
-} from "@/features/settings/interfaces/settings.interface";
+} from "@/services/settings/interface";
 import {
   businessSettingsSchema,
   ownerProfileSchema,
   passwordSchema,
   paymentAccountSchema,
   preferenceSchema,
-} from "@/features/settings/schemas/settings.schema";
+} from "@/services/settings/schema";
 import { createClient } from "@/lib/supabase/server";
 
 type ActionResult<T = undefined> = {

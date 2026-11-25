@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { paymentSchema } from "@/features/payments/schemas/payment.schema";
+import { paymentSchema } from "@/services/payments/payment.schema";
 import { createClient } from "@/lib/supabase/server";
 
 const PAYMENT_PROOF_BUCKET = "payment-proofs";

@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import ReportsPage from "@/features/reports/components/ReportsPage";
-import { getFinancialReport } from "@/features/reports/services/report.service";
+import ReportsPage from "@/features/reports/ReportsPage";
+import { getFinancialReport } from "@/services/reports/service";
 
 async function ReportsContent() {
   await connection();

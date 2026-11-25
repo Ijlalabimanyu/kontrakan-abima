@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { roomSchema } from "@/features/rooms/schemas/room.schema";
+import { roomSchema } from "@/services/rooms/schema";
 
 export interface RoomActionState {
   success: boolean;

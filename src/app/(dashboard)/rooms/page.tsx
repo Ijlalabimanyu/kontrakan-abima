@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import { getProperties } from "@/features/properties/services/property.service";
-import { getRooms } from "@/features/rooms/services/room.service";
-import RoomTable from "@/features/rooms/components/RoomTable";
+import { getProperties } from "@/services/properties/property.service";
+import { getRooms } from "@/services/rooms/service";
+import RoomTable from "@/features/rooms/RoomTable";
 
 async function RoomsContent() {
   await connection();

@@ -2,8 +2,8 @@ import {
   getContracts,
   getContractRooms,
   getContractTenants,
-} from "@/features/contracts/services/contract.service";
-import ContractTable from "@/features/contracts/components/ContractTable";
+} from "@/services/contract/service";
+import ContractTable from "@/features/contracts/ContractTable";
 
 export default async function ContractsPage() {
   const [contracts, rooms, tenants] = await Promise.all([

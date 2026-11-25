@@ -1,8 +1,8 @@
 "use server";
 
-import type { FinancialReportData } from "@/features/reports/interfaces/report.interface";
-import { reportSchema } from "@/features/reports/schemas/report.schema";
-import { getFinancialReport } from "@/features/reports/services/report.service";
+import type { FinancialReportData } from "@/services/reports/interface";
+import { reportSchema } from "@/services/reports/schema";
+import { getFinancialReport } from "@/services/reports/service";
 
 export async function getFinancialReportAction(
   values: unknown,

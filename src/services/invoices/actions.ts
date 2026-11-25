@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 
-import { generateInvoiceSchema } from "@/features/invoices/schemas/invoice.schema";
+import { generateInvoiceSchema } from "@/services/invoices/schema";
 import { createClient } from "@/lib/supabase/server";
 
 interface GenerateInvoiceResult {

@@ -1,9 +1,9 @@
-import MaintenanceTable from "@/features/maintenance/components/MaintenanceTable";
+import MaintenanceTable from "@/features/maintenance/MaintenanceTable";
 import {
   getMaintenancePropertyOptions,
   getMaintenanceRoomOptions,
   getMaintenances,
-} from "@/features/maintenance/services/maintenance.service";
+} from "@/services/maintenance/service";
 
 export default async function MaintenancePage() {
   const [maintenances, properties, rooms] = await Promise.all([

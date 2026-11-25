@@ -5,12 +5,12 @@ import { revalidatePath } from "next/cache";
 import {
   completeMaintenanceSchema,
   maintenanceSchema,
-} from "@/features/maintenance/schemas/maintenance.schema";
+} from "@/services/maintenance/schema";
 import type {
   CompleteMaintenanceValues,
   MaintenanceFormValues,
   MaintenanceStatus,
-} from "@/features/maintenance/interfaces/maintenance.interface";
+} from "@/services/maintenance/interface";
 import { createClient } from "@/lib/supabase/server";
 
 type ActionResult<T = undefined> = {

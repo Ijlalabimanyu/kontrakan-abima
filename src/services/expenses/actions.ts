@@ -4,10 +4,10 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { expenseSchema } from "@/features/expenses/schemas/expense.schema";
+import { expenseSchema } from "@/services/expenses/schema";
 import { createClient } from "@/lib/supabase/server";
 
-import type { ExpenseSchemaValues } from "@/features/expenses/schemas/expense.schema";
+import type { ExpenseSchemaValues } from "@/services/expenses/schema";
 
 interface ExpenseActionResponse {
   success: boolean;

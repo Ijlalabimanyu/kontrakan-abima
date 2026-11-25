@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import FinancePage from "@/features/finance/components/FinancePage";
-import { getFinancePageData } from "@/features/finance/services/finance.service";
+import FinancePage from "@/features/finance/FinancePage";
+import { getFinancePageData } from "@/services/finance/service";
 
 async function FinanceContent() {
   await connection();
