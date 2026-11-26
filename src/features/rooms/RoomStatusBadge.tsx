@@ -1,27 +1,38 @@
-import { Tag } from "antd";
-import { RoomStatus } from "@/services/rooms/interfaces";
+import { Badge } from "@/components/ui";
+
+import type { RoomStatus } from "@/services/rooms/interfaces";
 
 interface RoomStatusBadgeProps {
   status: RoomStatus;
 }
 
-const statusConfig: Record<RoomStatus, { label: string; color: string }> = {
+const statusConfig: Record<
+  RoomStatus,
+  {
+    label: string;
+    tone: "success" | "brand" | "warning";
+  }
+> = {
   AVAILABLE: {
     label: "Tersedia",
-    color: "success",
+    tone: "success",
   },
   OCCUPIED: {
     label: "Terisi",
-    color: "processing",
+    tone: "brand",
   },
   MAINTENANCE: {
     label: "Maintenance",
-    color: "warning",
+    tone: "warning",
   },
 };
 
 export default function RoomStatusBadge({ status }: RoomStatusBadgeProps) {
   const config = statusConfig[status];
 
-  return <Tag color={config.color}>{config.label}</Tag>;
+  return (
+    <Badge tone={config.tone} dot>
+      {config.label}
+    </Badge>
+  );
 }

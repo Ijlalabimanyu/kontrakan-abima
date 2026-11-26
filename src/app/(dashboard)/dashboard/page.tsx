@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-
 import DashboardView from "@/features/dashboard/DashboardView";
 import { getDashboardAnalytics } from "@/services/dashboard/service";
+import DashboardLoading from "@/features/dashboard/components/DashboardLoading";
 
 async function DashboardContent() {
   await connection();
@@ -14,7 +14,7 @@ async function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<DashboardLoading />}>
       <DashboardContent />
     </Suspense>
   );

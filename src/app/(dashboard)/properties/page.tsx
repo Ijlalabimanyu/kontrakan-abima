@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import { getProperties } from "@/services/properties/property.service";
+import { getProperties } from "@/services/properties/service";
 import PropertyTable from "@/features/properties/PropertyTable";
+import PropertiesLoading from "@/features/properties/PropertiesLoading";
 
 async function PropertiesContent() {
   await connection();
@@ -12,9 +13,11 @@ async function PropertiesContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Manajemen Properti</h1>
+        <h1 className="text-2xl font-bold text-foreground">
+          Manajemen Properti
+        </h1>
 
-        <p className="text-sm text-slate-500">
+        <p className="mt-1 text-sm text-muted">
           Kelola informasi properti kontrakan Anda.
         </p>
       </div>
@@ -26,7 +29,7 @@ async function PropertiesContent() {
 
 export default function PropertiesPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<PropertiesLoading />}>
       <PropertiesContent />
     </Suspense>
   );

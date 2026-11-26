@@ -155,6 +155,19 @@ select {
   font-family: var(--font-manrope), Arial, sans-serif;
 }
 
+.ka-sidebar-menu,
+.ka-sidebar-menu * {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.ka-sidebar-menu::-webkit-scrollbar,
+.ka-sidebar-menu *::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .ka-sidebar-menu .ant-menu-item-group-title {
   padding: 14px 16px 6px !important;
   color: var(--ka-text-disabled) !important;
@@ -191,14 +204,81 @@ select {
   color: inherit;
 }
 
-/* Collapsed sidebar */
+/* =========================================
+   COLLAPSED SIDEBAR
+========================================= */
+
+/* Menu container */
 .ka-sidebar-menu.ant-menu-inline-collapsed {
   width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden;
 }
 
+/* Reset icon margin */
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item .ant-menu-item-icon {
+  margin: 0 !important;
+}
+
+/* Hide group labels */
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item-group-title {
+  display: none !important;
+}
+
+/* Group container */
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item-group-list {
+  transform: translateX(1px) !important;
+}
+
+/* Menu item alignment */
 .ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   width: 48px !important;
-  margin-inline: auto !important;
+  height: 42px !important;
+  margin: 3px auto !important;
+  padding: 0 !important;
+  text-align: center !important;
+}
+
+/* Icon alignment */
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item .ant-menu-item-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 0 0 1px !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+/* Icon color */
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item .anticon {
+  color: inherit;
+}
+
+/* Hover */
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item:hover {
+  background: var(--ka-neutral-soft) !important;
+  color: var(--ka-brand-primary) !important;
+}
+
+/* Selected background */
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item-selected {
+  width: 48px !important;
+  height: 42px !important;
+  margin: 3px auto !important;
+  padding: 0 !important;
+  background: var(--ka-brand-soft) !important;
+  border-radius: 10px !important;
+  color: var(--ka-brand-primary) !important;
+}
+
+/* Remove selected indicator */
+.ka-sidebar-menu.ant-menu-inline-collapsed .ant-menu-item-selected::after {
+  display: none !important;
 }
 
 /* Layout overflow */

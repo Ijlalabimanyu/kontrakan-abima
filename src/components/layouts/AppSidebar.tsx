@@ -20,6 +20,7 @@ import {
 } from "@ant-design/icons";
 
 import Button from "@/components/ui/Button";
+import Image from "next/image";
 
 const { Sider } = Layout;
 
@@ -130,26 +131,41 @@ export default function AppSidebar({
   ];
 
   const sidebarContent = (
-    <div className="flex h-full min-h-0 flex-col bg-surface">
+    <div className="flex h-full min-h-0 w-full min-w-0 flex-col bg-surface">
       {/* Brand */}
-      <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-4">
+
+      {/* Brand */}
+      <div
+        className={`flex h-16 shrink-0 items-center border-b border-border ${
+          !mobile && collapsed ? "justify-center px-0" : "justify-between px-3"
+        }`}
+      >
         <Link
           href="/dashboard"
-          className="flex min-w-0 items-center gap-3"
           onClick={onNavigate}
+          aria-label="Rumaio Dashboard"
+          className={`flex min-w-0 items-center ${
+            !mobile && collapsed ? "justify-center" : "flex-1 gap-2"
+          }`}
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-primary">
-            <span className="text-sm font-bold text-white">KA</span>
-          </div>
+          <Image
+            src="/images/rumaio-icon.png"
+            alt="Rumaio"
+            width={40}
+            height={40}
+            priority
+            className="h-10 w-10 shrink-0 object-contain"
+          />
 
           {(!collapsed || mobile) && (
-            <div className="min-w-0">
-              <p className="truncate text-sm font-bold text-foreground">
-                Kontrakan Abima
-              </p>
-              <p className="text-[10px] font-medium tracking-wider text-muted">
+            <div className="flex min-w-0 flex-col justify-center">
+              <span className="text-[17px] font-extrabold leading-5 tracking-[0.04em] text-brand-primary">
+                RUMAIO
+              </span>
+
+              <span className="mt-0.5 whitespace-nowrap text-[7px] font-semibold leading-3 tracking-[0.13em] text-muted">
                 PROPERTY MANAGEMENT
-              </p>
+              </span>
             </div>
           )}
         </Link>
@@ -161,6 +177,7 @@ export default function AppSidebar({
             icon={<CloseOutlined />}
             onClick={onClose}
             aria-label="Tutup navigasi"
+            className="ml-auto shrink-0"
           />
         )}
       </div>
@@ -172,24 +189,20 @@ export default function AppSidebar({
         selectedKeys={[selectedKey]}
         inlineCollapsed={!mobile && collapsed}
         items={menuItems}
-        className="ka-sidebar-menu min-h-0 flex-1 overflow-y-auto border-none! py-3!"
+        className="ka-sidebar-menu min-h-0 min-w-0 flex-1 overflow-y-auto border-none! py-3!"
       />
 
       {/* Sidebar Footer */}
-      <div className="shrink-0 border-t border-border p-4">
-        {(!collapsed || mobile) && (
+      {(!collapsed || mobile) && (
+        <div className="shrink-0 border-t border-border p-4">
           <div>
             <p className="text-xs font-semibold text-foreground">
               Kontrakan Abima
             </p>
             <p className="mt-1 text-[11px] text-muted">Owner Workspace</p>
           </div>
-        )}
-
-        {collapsed && !mobile && (
-          <div className="text-center text-xs font-semibold text-muted">KA</div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 
@@ -199,7 +212,7 @@ export default function AppSidebar({
 
   return (
     <Sider
-      width={260}
+      width={180}
       collapsedWidth={80}
       collapsed={collapsed}
       collapsible

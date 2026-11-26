@@ -34,8 +34,9 @@ export default function TablePagination({
   return (
     <div
       className={[
-        "flex flex-col gap-3 border-t border-border py-4",
-        "sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col items-center gap-3",
+        "border-t border-border py-4 text-center",
+        "md:flex-row md:justify-between md:text-left",
         className,
       ]
         .filter(Boolean)
@@ -56,6 +57,7 @@ export default function TablePagination({
         showQuickJumper={false}
         responsive
         size="medium"
+        className="flex! flex-wrap! justify-center!"
       />
     </div>
   );

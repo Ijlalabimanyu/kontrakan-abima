@@ -3,7 +3,7 @@
 import { useEffect, useTransition } from "react";
 import { Button, Form, Input, InputNumber, Modal, Select, message } from "antd";
 
-import { PropertyModel } from "@/services/properties/property.interface";
+import { PropertyModel } from "@/services/properties/interface";
 import {
   createRoom,
   updateRoom,
@@ -176,8 +176,8 @@ export default function RoomForm({
                 <Input />
               </Form.Item>
               <p className="mb-4 text-sm text-blue-600">
-                Status kamar sedang terisi dan dikelola berdasarkan kontrak
-                yang berlaku.
+                Status kamar sedang terisi dan dikelola berdasarkan kontrak yang
+                berlaku.
               </p>
             </>
           )}

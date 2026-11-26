@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import { getProperties } from "@/services/properties/property.service";
+import { getProperties } from "@/services/properties/service";
 import { getRooms } from "@/services/rooms/service";
+
 import RoomTable from "@/features/rooms/RoomTable";
+import RoomsLoading from "@/features/rooms/RoomsLoading";
 
 async function RoomsContent() {
   await connection();
@@ -13,9 +15,9 @@ async function RoomsContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Manajemen Kamar</h1>
+        <h1 className="text-2xl font-bold text-foreground">Manajemen Kamar</h1>
 
-        <p className="text-sm text-slate-500">
+        <p className="mt-1 text-sm text-muted">
           Kelola kamar, harga sewa, dan ketersediaan kamar kontrakan.
         </p>
       </div>
@@ -27,7 +29,7 @@ async function RoomsContent() {
 
 export default function RoomsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<RoomsLoading />}>
       <RoomsContent />
     </Suspense>
   );

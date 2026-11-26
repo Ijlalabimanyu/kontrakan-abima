@@ -1,9 +1,12 @@
 "use client";
 
-import { Input, Select, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-import { PropertyModel } from "@/services/properties/property.interface";
-import { RoomFilterValues } from "@/services/rooms/interfaces";
+import { Search } from "lucide-react";
+
+import { Input, Select } from "@/components/ui";
+
+import type { PropertyModel } from "@/services/properties/interface";
+
+import type { RoomFilterValues, RoomStatus } from "@/services/rooms/interfaces";
 
 interface RoomFilterProps {
   properties: PropertyModel[];
@@ -17,11 +20,12 @@ export default function RoomFilter({
   onChange,
 }: RoomFilterProps) {
   return (
-    <Space wrap className="w-full">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_220px_180px]">
+      {/* Search */}
       <Input
         allowClear
         placeholder="Cari nomor kamar..."
-        prefix={<SearchOutlined />}
+        prefix={<Search size={16} className="text-muted" />}
         value={filters.search}
         onChange={(event) =>
           onChange({
@@ -29,18 +33,19 @@ export default function RoomFilter({
             search: event.target.value,
           })
         }
-        className="!w-full sm:!w-64"
       />
 
+      {/* Property Filter */}
       <Select
         allowClear
         placeholder="Semua properti"
-        className="w-full sm:!w-52"
-        value={filters.property_id}
+        value={filters.property_id ?? undefined}
         options={properties.map((property) => ({
           label: property.name,
           value: property.id,
         }))}
+        showSearch
+        optionFilterProp="label"
         onChange={(value) =>
           onChange({
             ...filters,
@@ -49,11 +54,11 @@ export default function RoomFilter({
         }
       />
 
+      {/* Status Filter */}
       <Select
         allowClear
         placeholder="Semua status"
-        className="w-full sm:!w-44"
-        value={filters.status}
+        value={filters.status ?? undefined}
         options={[
           { label: "Tersedia", value: "AVAILABLE" },
           { label: "Terisi", value: "OCCUPIED" },
@@ -62,10 +67,10 @@ export default function RoomFilter({
         onChange={(value) =>
           onChange({
             ...filters,
-            status: value ?? null,
+            status: (value ?? null) as RoomStatus | null,
           })
         }
       />
-    </Space>
+    </div>
   );
 }

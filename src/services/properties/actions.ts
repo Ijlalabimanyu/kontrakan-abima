@@ -1,11 +1,11 @@
 "use server";
 
-import { PropertyFormValues } from "@/services/properties/property.interface";
+import { PropertyFormValues } from "@/services/properties/interface";
 import {
   createProperty,
   deleteProperty,
   updateProperty,
-} from "@/services/properties/property.service";
+} from "@/services/properties/service";
 import { revalidatePath } from "next/cache";
 
 export interface PropertyActionResult {
@@ -66,10 +66,25 @@ export async function deletePropertyAction(
       message: "Properti berhasil dihapus.",
     };
   } catch (error) {
+    // Foreign Key: properti masih memiliki kamar.
+    if (
+      error !== null &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "23503" &&
+      "constraint" in error &&
+      error.constraint === "rooms_property_id_fkey"
+    ) {
+      return {
+        success: false,
+        message:
+          "Properti ini masih memiliki kamar yang terdaftar. Hapus data kamar terlebih dahulu sebelum menghapus properti.",
+      };
+    }
+
     return {
       success: false,
-      message:
-        error instanceof Error ? error.message : "Gagal menghapus properti.",
+      message: "Gagal menghapus properti. Silakan coba kembali.",
     };
   }
 }

@@ -1,8 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import {
-  PropertyModel,
-  PropertyFormValues,
-} from "./property.interface";
+import { PropertyModel, PropertyFormValues } from "./interface";
 
 export async function getProperties(): Promise<PropertyModel[]> {
   const supabase = await createClient();
