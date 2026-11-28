@@ -2,23 +2,10 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Button,
-  Card,
-  Popconfirm,
-  Space,
-  Table,
-  Typography,
-  message,
-} from "antd";
+import { message, Popconfirm, Space } from "antd";
+import { Plus, Eye, Pencil, CheckCircle2, XCircle } from "lucide-react";
+import { Button, Card, EmptyState } from "@/components/ui";
 import type { ColumnsType } from "antd/es/table";
-import {
-  PlusOutlined,
-  EyeOutlined,
-  EditOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
 import dayjs from "dayjs";
 
 import {
@@ -27,14 +14,15 @@ import {
   ContractRoomOption,
   ContractTenantOption,
 } from "@/services/contract/interface";
+
 import ContractForm from "./ContractForm";
 import ContractFilter from "./ContractFilter";
 import ContractStatusBadge from "./ContractStatusBadge";
 import ContractDetailModal from "./ContractDetailModal";
-import {
-  cancelContract,
-  completeContract,
-} from "@/services/contract/actions";
+import ContractCard from "./ContractCard";
+import { cancelContract, completeContract } from "@/services/contract/actions";
+import { DataTable, TablePagination, TableToolbar } from "@/components/tables";
+import { CurrencyFormatter } from "@/lib/utils";
 
 interface ContractTableProps {
   contracts: ContractModel[];
@@ -47,26 +35,22 @@ const initialFilters: ContractFilterValues = {
   status: null,
 };
 
-const currencyFormatter = new Intl.NumberFormat("id-ID", {
-  style: "currency",
-  currency: "IDR",
-  maximumFractionDigits: 0,
-});
-
 export default function ContractTable({
   contracts,
   rooms,
   tenants,
 }: ContractTableProps) {
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [isPending, startTransition] = useTransition();
 
   const [filters, setFilters] = useState(initialFilters);
   const [selectedContract, setSelectedContract] =
     useState<ContractModel | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const [messageApi, contextHolder] = message.useMessage();
+  const [requestedPage, setRequestedPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filteredContracts = useMemo(() => {
     const keyword = filters.search.trim().toLowerCase();
@@ -77,12 +61,34 @@ export default function ContractTable({
         contract.tenant_name.toLowerCase().includes(keyword) ||
         contract.room_number.toLowerCase().includes(keyword) ||
         contract.property_name.toLowerCase().includes(keyword);
+
       const matchesStatus =
         !filters.status || contract.status === filters.status;
 
       return matchesSearch && matchesStatus;
     });
   }, [contracts, filters]);
+
+  // Pagination
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredContracts.length / pageSize),
+  );
+  const currentPage = Math.min(requestedPage, totalPages);
+  const paginatedContracts = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredContracts.slice(startIndex, startIndex + pageSize);
+  }, [filteredContracts, currentPage, pageSize]);
+
+  const canCreateContract =
+    rooms.some(
+      (room) => room.status === "AVAILABLE" && !room.hasActiveContract,
+    ) && tenants.length > 0;
+
+  const handleFilterChange = (value: ContractFilterValues) => {
+    setFilters(value);
+    setRequestedPage(1);
+  };
 
   const handleAdd = () => {
     setSelectedContract(null);
@@ -121,10 +127,9 @@ export default function ContractTable({
           return;
         }
 
-        messageApi.success(result.message);
         router.refresh();
       } catch {
-        messageApi.error("Terjadi kesalahan saat memperbarui kontrak");
+        messageApi.error("Gagal memperbarui kontrak");
       }
     });
   };
@@ -134,14 +139,15 @@ export default function ContractTable({
       title: "No.",
       key: "index",
       width: 70,
-      render: (_, __, index) => index + 1,
+      align: "center",
+      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
     {
       title: "Penyewa",
       dataIndex: "tenant_name",
       key: "tenant_name",
       render: (value: string) => (
-        <Typography.Text strong>{value}</Typography.Text>
+        <span className="font-medium text-[#202C26]">{value}</span>
       ),
     },
     {
@@ -164,7 +170,7 @@ export default function ContractTable({
       title: "Harga / Bulan",
       dataIndex: "monthly_price",
       key: "monthly_price",
-      render: (value: number) => currencyFormatter.format(value),
+      render: (value: number) => CurrencyFormatter.format(value),
     },
     {
       title: "Status",
@@ -178,24 +184,26 @@ export default function ContractTable({
       title: "Aksi",
       key: "action",
       fixed: "right",
-      width: 180,
+      width: 240,
       render: (_, record) => (
         <Space>
           <Button
-            type="text"
-            icon={<EyeOutlined />}
-            title="Detail"
+            size="small"
+            variant="ghost"
             onClick={() => handleDetail(record)}
-          />
+          >
+            <Eye size={16} />
+          </Button>
 
           {record.status === "ACTIVE" && (
             <>
               <Button
-                type="text"
-                icon={<EditOutlined />}
-                title="Edit"
+                size="small"
+                variant="ghost"
                 onClick={() => handleEdit(record)}
-              />
+              >
+                <Pencil size={16} />
+              </Button>
 
               <Popconfirm
                 title="Selesaikan kontrak"
@@ -204,12 +212,9 @@ export default function ContractTable({
                 cancelText="Batal"
                 onConfirm={() => handleStatusChange(record.id, "COMPLETE")}
               >
-                <Button
-                  type="text"
-                  icon={<CheckCircleOutlined />}
-                  title="Selesaikan kontrak"
-                  disabled={isPending}
-                />
+                <Button size="small" variant="ghost" disabled={isPending}>
+                  <CheckCircle2 size={16} />
+                </Button>
               </Popconfirm>
 
               <Popconfirm
@@ -221,12 +226,13 @@ export default function ContractTable({
                 onConfirm={() => handleStatusChange(record.id, "CANCEL")}
               >
                 <Button
-                  type="text"
-                  danger
-                  icon={<CloseCircleOutlined />}
-                  title="Batalkan kontrak"
+                  variant="ghost"
+                  size="small"
                   disabled={isPending}
-                />
+                  className="text-danger! hover:bg-danger-soft!"
+                >
+                  <XCircle size={16} />
+                </Button>
               </Popconfirm>
             </>
           )}
@@ -239,53 +245,103 @@ export default function ContractTable({
     <>
       {contextHolder}
 
-      <Card>
-        <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-          <div>
-            <Typography.Title level={5} className="!mb-1">
-              Daftar Kontrak Sewa
-            </Typography.Title>
+      <div className="space-y-4">
+        {/* Toolbar */}
+        <TableToolbar
+          title="Daftar Kontrak Sewa"
+          description={`${filteredContracts.length} dari ${contracts.length} kontrak ditampilkan.`}
+          filters={
+            <div className="w-full min-w-0 sm:w-fit">
+              <ContractFilter filters={filters} onChange={handleFilterChange} />
+            </div>
+          }
+          actions={
+            <Button
+              variant="primary"
+              onClick={handleAdd}
+              disabled={!canCreateContract}
+              block
+              className="sm:w-auto!"
+              icon={<Plus size={17} />}
+            >
+              Buat Kontrak
+            </Button>
+          }
+        />
 
-            <Typography.Text type="secondary">
-              Total {contracts.length} kontrak
-            </Typography.Text>
-          </div>
-
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAdd}
-            disabled={
-              rooms.every(
-                (room) =>
-                  room.status === "MAINTENANCE" || room.hasActiveContract,
-              ) || tenants.length === 0
-            }
-          >
-            Buat Kontrak
-          </Button>
-        </div>
-
-        <ContractFilter filters={filters} onChange={setFilters} />
-
-        <div className="mt-4">
-          <Table
+        {/* Desktop Table */}
+        <Card className="hidden md:block">
+          <DataTable
             rowKey="id"
             columns={columns}
-            dataSource={filteredContracts}
-            scroll={{ x: 1100 }}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showTotal: (total) => `Total ${total} kontrak`,
-            }}
+            dataSource={paginatedContracts}
+            pagination={false}
+            scroll={{ x: 1300 }}
+            loading={isPending}
             locale={{
               emptyText: "Belum ada data kontrak",
             }}
           />
-        </div>
-      </Card>
 
+          {filteredContracts.length > 0 && (
+            <TablePagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={filteredContracts.length}
+              onChange={(page, nextPageSize) => {
+                setRequestedPage(page);
+                setPageSize(nextPageSize);
+              }}
+            />
+          )}
+        </Card>
+
+        {/* Mobile Contract Cards */}
+        <div className="space-y-5 md:hidden">
+          {filteredContracts.length === 0 ? (
+            <Card>
+              <EmptyState
+                title="Belum ada data kontrak"
+                description="Buat kontrak sewa pertama untuk mulai mengelola masa sewa dan penyewa."
+                action={
+                  canCreateContract ? (
+                    <Button onClick={handleAdd}>Buat Kontrak Pertama</Button>
+                  ) : undefined
+                }
+              />
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 gap-5">
+              {paginatedContracts.map((contract) => (
+                <ContractCard
+                  key={contract.id}
+                  contract={contract}
+                  onDetail={handleDetail}
+                  onEdit={handleEdit}
+                  onStatusChange={handleStatusChange}
+                  isPending={isPending}
+                />
+              ))}
+            </div>
+          )}
+
+          {filteredContracts.length > 0 && (
+            <div className="pt-1">
+              <TablePagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={filteredContracts.length}
+                onChange={(page, nextPageSize) => {
+                  setRequestedPage(page);
+                  setPageSize(nextPageSize);
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Create / Edit */}
       <ContractForm
         open={formOpen}
         contract={selectedContract}
@@ -298,6 +354,7 @@ export default function ContractTable({
         onSuccess={handleFormSuccess}
       />
 
+      {/* Detail */}
       <ContractDetailModal
         open={detailOpen}
         contract={selectedContract}

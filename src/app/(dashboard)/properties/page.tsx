@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-
 import { getProperties } from "@/services/properties/service";
 import PropertyTable from "@/features/properties/PropertyTable";
 import PropertiesLoading from "@/features/properties/PropertiesLoading";

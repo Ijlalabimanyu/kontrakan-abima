@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Modal as AntModal } from "antd";
@@ -10,6 +9,7 @@ export default function Modal({
   centered = true,
   width = 560,
   className,
+  rootClassName,
   ...props
 }: ModalProps) {
   return (
@@ -17,9 +17,8 @@ export default function Modal({
       {...props}
       centered={centered}
       width={width}
-      className={["ka-modal", className]
-        .filter(Boolean)
-        .join(" ")}
+      className={["ka-modal", className].filter(Boolean).join(" ")}
+      rootClassName={["ka-modal-root", rootClassName].filter(Boolean).join(" ")}
     />
   );
 }

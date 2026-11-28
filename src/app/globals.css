@@ -324,3 +324,42 @@ body {
 .ka-data-table .ant-empty-description {
   color: var(--ka-text-secondary);
 }
+
+/* =========================================
+   MODAL SCROLLBAR - HIDDEN
+========================================= */
+
+.ka-modal-root,
+.ka-modal-root *,
+.ka-modal,
+.ka-modal * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.ka-modal-root::-webkit-scrollbar,
+.ka-modal-root *::-webkit-scrollbar,
+.ka-modal::-webkit-scrollbar,
+.ka-modal *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* Keep modal scrolling enabled */
+.ka-modal .ant-modal-body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ka-modal-root .ant-modal-wrap {
+  overflow-y: auto;
+  scrollbar-width: none !important;
+}
+
+.ka-modal-root .ant-modal-wrap::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+}

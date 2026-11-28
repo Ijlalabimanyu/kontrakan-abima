@@ -1,9 +1,10 @@
 
 import { DatePicker as AntDatePicker } from "antd";
+import type { DatePickerProps as AntDatePickerProps } from "antd";
+import type { Dayjs } from "dayjs";
 import type { ComponentProps } from "react";
 
-export type DatePickerProps =
-  ComponentProps<typeof AntDatePicker>;
+export type DatePickerProps = AntDatePickerProps<Dayjs, false>;
 
 export type RangePickerProps =
   ComponentProps<typeof AntDatePicker.RangePicker>;

@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { paymentSchema } from "@/services/payments/payment.schema";
+import { paymentSchema } from "@/services/payments/schema";
 import { createClient } from "@/lib/supabase/server";
 
 const PAYMENT_PROOF_BUCKET = "payment-proofs";
@@ -67,8 +67,7 @@ interface UploadPaymentProofResult {
 }
 
 type PaymentProofUrlResult =
-  | { success: true; url: string }
-  | { success: false; message: string };
+  { success: true; url: string } | { success: false; message: string };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -129,8 +128,7 @@ export async function createPayment(
     return {
       success: false,
       message:
-        validation.error.issues[0]?.message ??
-        "Data pembayaran tidak valid.",
+        validation.error.issues[0]?.message ?? "Data pembayaran tidak valid.",
     };
   }
 
@@ -413,10 +411,7 @@ export async function getPayableInvoiceOptions(): Promise<PayableInvoiceOptionsR
 
   (payments ?? []).forEach((payment) => {
     const paidAmount = paidAmountMap.get(payment.invoice_id) ?? 0;
-    paidAmountMap.set(
-      payment.invoice_id,
-      paidAmount + Number(payment.amount),
-    );
+    paidAmountMap.set(payment.invoice_id, paidAmount + Number(payment.amount));
   });
 
   const data = invoices

@@ -5,6 +5,7 @@ import { Button, Card } from "@/components/ui";
 import type { RoomModel } from "@/services/rooms/interfaces";
 import RoomStatusBadge from "./RoomStatusBadge";
 import { EditOutlined } from "@ant-design/icons";
+import { CurrencyFormatter } from "@/lib/utils";
 
 interface RoomCardProps {
   room: RoomModel;
@@ -12,12 +13,6 @@ interface RoomCardProps {
   onEdit: (room: RoomModel) => void;
   onDelete: (room: RoomModel) => void;
 }
-
-const currencyFormatter = new Intl.NumberFormat("id-ID", {
-  style: "currency",
-  currency: "IDR",
-  maximumFractionDigits: 0,
-});
 
 export default function RoomCard({
   room,
@@ -58,7 +53,7 @@ export default function RoomCard({
           </div>
 
           <p className="mt-2 text-lg font-bold text-brand-primary">
-            {currencyFormatter.format(room.monthly_price)}
+            {CurrencyFormatter.format(room.monthly_price)}
           </p>
         </div>
 

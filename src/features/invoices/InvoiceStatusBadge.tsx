@@ -1,6 +1,6 @@
-import { Tag } from "antd";
+import { Badge } from "@/components/ui";
 
-import { InvoiceDisplayStatus } from "@/services/invoices/interface";
+import type { InvoiceDisplayStatus } from "@/services/invoices/interface";
 
 interface InvoiceStatusBadgeProps {
   status: InvoiceDisplayStatus;
@@ -8,27 +8,30 @@ interface InvoiceStatusBadgeProps {
 
 const statusConfig: Record<
   InvoiceDisplayStatus,
-  { label: string; color: string }
+  {
+    label: string;
+    tone: "success" | "brand" | "warning" | "danger" | "neutral";
+  }
 > = {
   UNPAID: {
     label: "Belum Dibayar",
-    color: "warning",
+    tone: "warning",
   },
   PARTIAL: {
     label: "Dibayar Sebagian",
-    color: "processing",
+    tone: "brand",
   },
   PAID: {
     label: "Lunas",
-    color: "success",
+    tone: "success",
   },
   OVERDUE: {
     label: "Terlambat",
-    color: "error",
+    tone: "danger",
   },
   CANCELLED: {
     label: "Dibatalkan",
-    color: "default",
+    tone: "neutral",
   },
 };
 
@@ -37,5 +40,9 @@ export default function InvoiceStatusBadge({
 }: InvoiceStatusBadgeProps) {
   const config = statusConfig[status];
 
-  return <Tag color={config.color}>{config.label}</Tag>;
+  return (
+    <Badge tone={config.tone} dot>
+      {config.label}
+    </Badge>
+  );
 }

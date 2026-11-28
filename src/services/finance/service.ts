@@ -1,7 +1,4 @@
-import {
-  getPayableInvoices,
-  getPayments,
-} from "@/services/payments/payment.service";
+import { getPayableInvoices, getPayments } from "@/services/payments/service";
 import { getExpenses } from "@/services/expenses/service";
 
 import type {

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { TenantModel } from "../interfaces/tenant.interfaces";
+import { TenantModel } from "./interfaces";
 
 export async function getTenants(): Promise<TenantModel[]> {
   const supabase = await createClient();

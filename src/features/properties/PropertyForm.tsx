@@ -1,9 +1,7 @@
 "use client";
 
 import { Form } from "antd";
-
 import { Button, Input, Modal, TextArea } from "@/components/ui";
-
 import type {
   PropertyFormValues,
   PropertyModel,
@@ -24,12 +22,12 @@ interface PropertyFormContentProps {
   onSubmit: (values: PropertyFormValues) => void;
 }
 
-function PropertyFormContent({
+const PropertyFormContent = ({
   loading,
   property,
   onCancel,
   onSubmit,
-}: PropertyFormContentProps) {
+}: PropertyFormContentProps) => {
   const [form] = Form.useForm<PropertyFormValues>();
 
   const initialValues: PropertyFormValues = {
@@ -135,7 +133,7 @@ function PropertyFormContent({
       </div>
     </Form>
   );
-}
+};
 
 export default function PropertyForm({
   open,

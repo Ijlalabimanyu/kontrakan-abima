@@ -2,23 +2,23 @@
 
 import { useEffect, useState } from "react";
 import {
-  Button,
+  Alert,
+  Button as AntButton,
   Descriptions,
   Empty,
   List,
-  Modal,
   Spin,
   Typography,
-  message,
 } from "antd";
 import dayjs from "dayjs";
-
+import { Button, Modal } from "@/components/ui";
 import {
   getInvoicePaymentHistoryAction,
   getPaymentProofUrl,
 } from "@/services/payments/actions";
-import { PaymentModel } from "@/services/payments/payment.interface";
+import type { PaymentModel } from "@/services/payments/interface";
 import PaymentMethodBadge from "./PaymentMethodBadge";
+import { CurrencyFormatter } from "@/lib/utils";
 
 interface PaymentDetailModalProps {
   open: boolean;
@@ -34,13 +34,6 @@ interface PaymentHistoryItem {
   payment_method: "CASH" | "TRANSFER" | "QRIS";
 }
 
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-
 export default function PaymentDetailModal({
   open,
   payment,
@@ -48,8 +41,9 @@ export default function PaymentDetailModal({
 }: PaymentDetailModalProps) {
   const [history, setHistory] = useState<PaymentHistoryItem[]>([]);
   const [proofUrl, setProofUrl] = useState<string | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [proofError, setProofError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     if (!open || !payment) return;
@@ -60,44 +54,45 @@ export default function PaymentDetailModal({
       setLoading(true);
       setHistory([]);
       setProofUrl(null);
+      setHistoryError(null);
+      setProofError(null);
 
-      try {
-        const historyResult = await getInvoicePaymentHistoryAction(
-          payment.invoice_id,
-        );
+      const historyTask = getInvoicePaymentHistoryAction(payment.invoice_id);
 
-        if (!historyResult.success) {
-          throw new Error(historyResult.message);
+      const proofTask = payment.proof_path
+        ? getPaymentProofUrl(payment.proof_path)
+        : Promise.resolve(null);
+
+      const [historyResult, proofResult] = await Promise.allSettled([
+        historyTask,
+        proofTask,
+      ]);
+
+      if (cancelled) return;
+
+      if (historyResult.status === "fulfilled") {
+        if (historyResult.value.success) {
+          setHistory(historyResult.value.data);
+        } else {
+          setHistoryError(historyResult.value.message);
         }
-
-        if (!cancelled) {
-          setHistory(historyResult.data);
-        }
-
-        if (payment.proof_path) {
-          const proofResult = await getPaymentProofUrl(payment.proof_path);
-
-          if (!proofResult.success) {
-            throw new Error(proofResult.message);
-          }
-
-          if (!cancelled) {
-            setProofUrl(proofResult.url);
-          }
-        }
-      } catch (error) {
-        if (!cancelled) {
-          messageApi.error(
-            error instanceof Error
-              ? error.message
-              : "Gagal mengambil detail pembayaran.",
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+      } else {
+        setHistoryError("Gagal mengambil riwayat pembayaran.");
       }
+
+      if (proofResult.status === "fulfilled") {
+        if (proofResult.value === null) {
+          setProofUrl(null);
+        } else if (proofResult.value.success) {
+          setProofUrl(proofResult.value.url);
+        } else {
+          setProofError(proofResult.value.message);
+        }
+      } else {
+        setProofError("Gagal membuka bukti pembayaran.");
+      }
+
+      setLoading(false);
     };
 
     void loadDetails();
@@ -105,84 +100,105 @@ export default function PaymentDetailModal({
     return () => {
       cancelled = true;
     };
-  }, [open, payment, messageApi]);
+  }, [open, payment]);
 
   if (!payment) return null;
 
   return (
-    <>
-      {contextHolder}
+    <Modal
+      title="Detail Pembayaran"
+      open={open}
+      onCancel={onClose}
+      width={600}
+      footer={null}
+    >
+      <Spin spinning={loading}>
+        <div className="space-y-4">
+          {/* Nomor Pembayaran */}
+          <div>
+            <p className="text-xs text-[#68756D]">Nomor Pembayaran</p>
+            <p className="mt-1 break-all text-base font-semibold text-[#173F35]">
+              {payment.payment_number}
+            </p>
+          </div>
 
-      <Modal
-        title="Detail Pembayaran"
-        open={open}
-        onCancel={onClose}
-        footer={null}
-        width={650}
-        destroyOnHidden
-      >
-        <Spin spinning={loading}>
-          <div className="space-y-5">
-            <Descriptions bordered size="small" column={1}>
-              <Descriptions.Item label="Nomor Pembayaran">
-                {payment.payment_number}
-              </Descriptions.Item>
-              <Descriptions.Item label="Nomor Invoice">
-                {payment.invoice_number}
-              </Descriptions.Item>
-              <Descriptions.Item label="Penyewa">
-                {payment.tenant_name}
-              </Descriptions.Item>
-              <Descriptions.Item label="Properti / Kamar">
-                {payment.property_name} / {payment.room_number}
-              </Descriptions.Item>
-              <Descriptions.Item label="Tanggal Pembayaran">
-                {dayjs(payment.payment_date).format("DD MMMM YYYY")}
-              </Descriptions.Item>
-              <Descriptions.Item label="Metode">
-                <PaymentMethodBadge method={payment.payment_method} />
-              </Descriptions.Item>
-              <Descriptions.Item label="Nominal">
-                <strong>{formatCurrency(payment.amount)}</strong>
-              </Descriptions.Item>
-              <Descriptions.Item label="Nomor Referensi">
-                {payment.reference_number || "-"}
-              </Descriptions.Item>
-              <Descriptions.Item label="Catatan">
-                {payment.notes || "-"}
-              </Descriptions.Item>
-            </Descriptions>
+          {/* Informasi Pembayaran */}
+          <Descriptions bordered column={1} size="small">
+            <Descriptions.Item label="Nomor Invoice">
+              {payment.invoice_number}
+            </Descriptions.Item>
 
-            <div className="space-y-2">
-              <Typography.Text strong>Bukti Pembayaran</Typography.Text>
-              {proofUrl ? (
-                <div>
-                  <Button
-                    type="link"
-                    href={proofUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Lihat Bukti Pembayaran
-                  </Button>
-                </div>
-              ) : (
-                <div>
-                  <Typography.Text type="secondary">
-                    {payment.proof_path
-                      ? loading
-                        ? "Memuat bukti pembayaran..."
-                        : "Bukti pembayaran tidak dapat dimuat."
-                      : "Tidak ada bukti pembayaran."}
-                  </Typography.Text>
-                </div>
-              )}
-            </div>
+            <Descriptions.Item label="Penyewa">
+              {payment.tenant_name}
+            </Descriptions.Item>
 
-            <div className="space-y-3">
-              <Typography.Text strong>
-                Riwayat Pembayaran Invoice
+            <Descriptions.Item label="Nomor Telepon">
+              {payment.tenant_phone || "-"}
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Properti / Kamar">
+              {payment.property_name} / {payment.room_number}
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Tanggal Pembayaran">
+              {dayjs(payment.payment_date).format("DD MMMM YYYY")}
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Metode Pembayaran">
+              <PaymentMethodBadge method={payment.payment_method} />
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Nominal">
+              <span className="font-semibold text-[#173F35]">
+                {CurrencyFormatter.format(payment.amount)}
+              </span>
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Nomor Referensi">
+              {payment.reference_number || "-"}
+            </Descriptions.Item>
+
+            <Descriptions.Item label="Catatan">
+              {payment.notes || "-"}
+            </Descriptions.Item>
+          </Descriptions>
+
+          {/* Bukti Pembayaran */}
+          <div className="space-y-2 pt-4">
+            <p className="text-sm font-medium text-[#202C26]">
+              Bukti Pembayaran
+            </p>
+
+            {proofUrl ? (
+              <AntButton
+                type="link"
+                href={proofUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="px-0!"
+              >
+                Lihat Bukti Pembayaran
+              </AntButton>
+            ) : proofError ? (
+              <Alert type="warning" showIcon message={proofError} />
+            ) : (
+              <Typography.Text type="secondary">
+                {payment.proof_path
+                  ? "Memuat bukti pembayaran..."
+                  : "Tidak ada bukti pembayaran."}
               </Typography.Text>
+            )}
+          </div>
+
+          {/* Riwayat Pembayaran */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-[#202C26]">
+              Riwayat Pembayaran Invoice
+            </p>
+
+            {historyError ? (
+              <Alert type="error" showIcon message={historyError} />
+            ) : (
               <List
                 bordered
                 dataSource={history}
@@ -192,26 +208,40 @@ export default function PaymentDetailModal({
                   ),
                 }}
                 renderItem={(item) => (
-                  <List.Item>
-                    <div className="flex w-full justify-between gap-3">
-                      <div>
-                        <div className="font-medium">{item.payment_number}</div>
-                        <Typography.Text type="secondary">
+                  <List.Item className="px-4!">
+                    <div className="flex w-full items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="break-all font-medium text-[#202C26]">
+                          {item.payment_number}
+                        </p>
+
+                        <p className="mt-1 text-xs text-[#68756D]">
                           {dayjs(item.payment_date).format("DD MMM YYYY")}
-                        </Typography.Text>
-                        <div className="mt-1">
+                        </p>
+
+                        <div className="mt-2">
                           <PaymentMethodBadge method={item.payment_method} />
                         </div>
                       </div>
-                      <strong>{formatCurrency(item.amount)}</strong>
+
+                      <strong className="shrink-0 text-sm text-[#173F35]">
+                        {CurrencyFormatter.format(item.amount)}
+                      </strong>
                     </div>
                   </List.Item>
                 )}
               />
-            </div>
+            )}
           </div>
-        </Spin>
-      </Modal>
-    </>
+
+          {/* Action */}
+          <div className="mt-5 flex justify-end">
+            <Button variant="outline" onClick={onClose}>
+              Tutup
+            </Button>
+          </div>
+        </div>
+      </Spin>
+    </Modal>
   );
 }

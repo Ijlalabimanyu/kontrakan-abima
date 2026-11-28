@@ -14,12 +14,10 @@ export interface InvoiceModel {
   notes: string | null;
   created_at: string;
   updated_at: string;
-
   tenant_name: string;
   tenant_phone: string;
   room_number: string;
   property_name: string;
-
   display_status: InvoiceDisplayStatus;
 }
 

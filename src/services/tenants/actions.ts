@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { tenantSchema } from "@/features/tenants/schemas/tenant.schema";
+import { tenantSchema } from "@/services/tenants/schema";
 
 export interface TenantActionState {
   success: boolean;

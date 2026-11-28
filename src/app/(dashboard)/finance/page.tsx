@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-
 import FinancePage from "@/features/finance/FinancePage";
+import FinanceLoading from "@/features/finance/FinanceLoading";
 import { getFinancePageData } from "@/services/finance/service";
 
 async function FinanceContent() {
@@ -14,7 +14,7 @@ async function FinanceContent() {
 
 export default function FinanceRoute() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<FinanceLoading />}>
       <FinanceContent />
     </Suspense>
   );

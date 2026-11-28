@@ -52,18 +52,13 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
 
   // Form
   const [selectedRoom, setSelectedRoom] = useState<RoomModel | null>(null);
-
   const [modalOpen, setModalOpen] = useState(false);
 
   // Delete
   const [deleteTarget, setDeleteTarget] = useState<RoomModel | null>(null);
-
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-  // -----------------------------------------
   // Filtering
-  // -----------------------------------------
-
   const filteredRooms = useMemo(() => {
     const search = filters.search.trim().toLocaleLowerCase("id-ID");
 
@@ -86,24 +81,15 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
     setCurrentPage(1);
   };
 
-  // -----------------------------------------
   // Pagination
-  // -----------------------------------------
-
   const totalPages = Math.max(1, Math.ceil(filteredRooms.length / pageSize));
-
   const effectiveCurrentPage = Math.min(currentPage, totalPages);
-
   const paginatedRooms = useMemo(() => {
     const startIndex = (effectiveCurrentPage - 1) * pageSize;
-
     return filteredRooms.slice(startIndex, startIndex + pageSize);
   }, [filteredRooms, effectiveCurrentPage, pageSize]);
 
-  // -----------------------------------------
   // Room Statistics
-  // -----------------------------------------
-
   const roomStats = useMemo(
     () => [
       {
@@ -130,10 +116,7 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
     [rooms],
   );
 
-  // -----------------------------------------
   // Add & Edit
-  // -----------------------------------------
-
   const handleAdd = () => {
     if (properties.length === 0) return;
 
@@ -156,15 +139,11 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
     router.refresh();
   };
 
-  // -----------------------------------------
   // Delete
-  // -----------------------------------------
-
   const handleDelete = async () => {
     if (!deleteTarget || isDeleting) return;
 
     const roomId = deleteTarget.id;
-
     setIsDeleting(roomId);
 
     try {
@@ -176,7 +155,6 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
       }
 
       messageApi.success(result.message);
-
       setDeleteTarget(null);
       router.refresh();
     } catch {
@@ -186,10 +164,7 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
     }
   };
 
-  // -----------------------------------------
   // Table Columns
-  // -----------------------------------------
-
   const columns: ColumnsType<RoomModel> = [
     {
       title: "No.",
@@ -264,7 +239,7 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
             variant="ghost"
             size="small"
             icon={<DeleteOutlined />}
-            className="!text-danger hover:!bg-danger-soft"
+            className="text-danger! hover:bg-danger-soft!"
             aria-label={`Hapus kamar ${record.room_number}`}
             disabled={isDeleting !== null}
             onClick={() => setDeleteTarget(record)}
@@ -280,7 +255,7 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
     <>
       {contextHolder}
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Room Statistics */}
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {roomStats.map((stat) => (
@@ -318,7 +293,7 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
               onClick={handleAdd}
               disabled={properties.length === 0 || isDeleteLoading}
               block
-              className="sm:!w-auto"
+              className="sm:w-auto!"
             >
               Tambah Kamar
             </Button>
@@ -442,7 +417,7 @@ export default function RoomTable({ rooms, properties }: RoomTableProps) {
         title="Hapus Kamar?"
         description={
           <>
-            Apakah kamu yakin ingin menghapus kamar{" "}
+            Apakah Anda yakin ingin menghapus kamar{" "}
             <strong>{deleteTarget?.room_number}</strong>? Tindakan ini tidak
             dapat dibatalkan.
           </>

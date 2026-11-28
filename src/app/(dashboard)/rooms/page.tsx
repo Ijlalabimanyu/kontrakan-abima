@@ -1,9 +1,7 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-
 import { getProperties } from "@/services/properties/service";
 import { getRooms } from "@/services/rooms/service";
-
 import RoomTable from "@/features/rooms/RoomTable";
 import RoomsLoading from "@/features/rooms/RoomsLoading";
 

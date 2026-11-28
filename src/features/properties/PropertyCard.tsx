@@ -2,32 +2,19 @@
 
 import {
   CalendarOutlined,
-  DeleteOutlined,
   EditOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
-
 import { Button, Card } from "@/components/ui";
-
 import type { PropertyModel } from "@/services/properties/interface";
+import { FormatDate } from "@/lib/utils";
+import { Trash2 } from "lucide-react";
 
 interface PropertyCardProps {
   property: PropertyModel;
   disabled?: boolean;
   onEdit: (property: PropertyModel) => void;
   onDelete: (property: PropertyModel) => void;
-}
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Tanggal tidak tersedia";
-  }
-
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-  }).format(date);
 }
 
 export default function PropertyCard({
@@ -62,7 +49,7 @@ export default function PropertyCard({
         <div className="flex items-center gap-2 border-t border-border pt-3 text-xs text-muted">
           <CalendarOutlined />
 
-          <span>Terdaftar {formatDate(property.created_at)}</span>
+          <span>Terdaftar {FormatDate(property.created_at)}</span>
         </div>
 
         {/* Actions */}
@@ -78,10 +65,9 @@ export default function PropertyCard({
           </Button>
 
           <Button
-            variant="outline"
+            variant="danger"
             size="small"
-            icon={<DeleteOutlined />}
-            className="border-danger! text-danger! hover:bg-danger-soft!"
+            icon={<Trash2 size={14} />}
             disabled={disabled}
             onClick={() => onDelete(property)}
           >

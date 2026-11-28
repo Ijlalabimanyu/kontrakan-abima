@@ -1,5 +1,5 @@
 import { getExpenses } from "@/services/expenses/service";
-import { getPayments } from "@/services/payments/payment.service";
+import { getPayments } from "@/services/payments/service";
 
 import type {
   ExpenseCategorySummary,

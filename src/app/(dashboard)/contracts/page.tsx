@@ -1,11 +1,16 @@
+import { Suspense } from "react";
+import { connection } from "next/server";
 import {
   getContracts,
   getContractRooms,
   getContractTenants,
 } from "@/services/contract/service";
 import ContractTable from "@/features/contracts/ContractTable";
+import ContractsLoading from "@/features/contracts/ContractLoading";
 
-export default async function ContractsPage() {
+async function ContractsContent() {
+  await connection();
+
   const [contracts, rooms, tenants] = await Promise.all([
     getContracts(),
     getContractRooms(),
@@ -15,14 +20,24 @@ export default async function ContractsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Manajemen Kontrak</h1>
+        <h1 className="text-2xl font-semibold text-[#202C26]">
+          Manajemen Kontrak
+        </h1>
 
-        <p className="text-sm text-slate-500">
+        <p className="mt-1 text-sm text-[#68756D]">
           Kelola penyewaan kamar dan riwayat kontrak penyewa.
         </p>
       </div>
 
       <ContractTable contracts={contracts} rooms={rooms} tenants={tenants} />
     </div>
+  );
+}
+
+export default function ContractsPage() {
+  return (
+    <Suspense fallback={<ContractsLoading />}>
+      <ContractsContent />
+    </Suspense>
   );
 }

@@ -1,5 +1,6 @@
-import { Tag } from "antd";
-import { ContractStatus } from "@/services/contract/interface";
+import { Badge } from "@/components/ui";
+
+import type { ContractStatus } from "@/services/contract/interface";
 
 interface ContractStatusBadgeProps {
   status: ContractStatus;
@@ -7,19 +8,22 @@ interface ContractStatusBadgeProps {
 
 const statusConfig: Record<
   ContractStatus,
-  { label: string; color: string }
+  {
+    label: string;
+    tone: "success" | "brand" | "warning";
+  }
 > = {
   ACTIVE: {
     label: "Aktif",
-    color: "success",
+    tone: "success",
   },
   COMPLETED: {
     label: "Selesai",
-    color: "default",
+    tone: "brand",
   },
   CANCELLED: {
     label: "Dibatalkan",
-    color: "error",
+    tone: "warning",
   },
 };
 
@@ -28,5 +32,9 @@ export default function ContractStatusBadge({
 }: ContractStatusBadgeProps) {
   const config = statusConfig[status];
 
-  return <Tag color={config.color}>{config.label}</Tag>;
+  return (
+    <Badge tone={config.tone} dot>
+      {config.label}
+    </Badge>
+  );
 }

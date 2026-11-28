@@ -1,4 +1,4 @@
-import type { PaymentModel } from "@/services/payments/payment.interface";
+import type { PaymentModel } from "@/services/payments/interface";
 import type { ExpenseModel } from "@/services/expenses/interface";
 
 export type ReceivableStatus = "NOT_DUE" | "OVERDUE";

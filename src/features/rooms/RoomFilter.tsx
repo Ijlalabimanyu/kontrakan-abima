@@ -1,11 +1,8 @@
 "use client";
 
 import { Search } from "lucide-react";
-
 import { Input, Select } from "@/components/ui";
-
 import type { PropertyModel } from "@/services/properties/interface";
-
 import type { RoomFilterValues, RoomStatus } from "@/services/rooms/interfaces";
 
 interface RoomFilterProps {
@@ -20,9 +17,10 @@ export default function RoomFilter({
   onChange,
 }: RoomFilterProps) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_220px_180px]">
+    <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
       {/* Search */}
       <Input
+        className="w-full min-w-0"
         allowClear
         placeholder="Cari nomor kamar..."
         prefix={<Search size={16} className="text-muted" />}
@@ -37,6 +35,7 @@ export default function RoomFilter({
 
       {/* Property Filter */}
       <Select
+        className="w-full min-w-0"
         allowClear
         placeholder="Semua properti"
         value={filters.property_id ?? undefined}
@@ -56,6 +55,7 @@ export default function RoomFilter({
 
       {/* Status Filter */}
       <Select
+        className="w-full min-w-0"
         allowClear
         placeholder="Semua status"
         value={filters.status ?? undefined}

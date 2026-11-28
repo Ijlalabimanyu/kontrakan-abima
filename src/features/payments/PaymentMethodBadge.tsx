@@ -1,6 +1,5 @@
-import { Tag } from "antd";
-
-import { PaymentMethod } from "@/services/payments/payment.interface";
+import { Badge } from "@/components/ui";
+import type { PaymentMethod } from "@/services/payments/interface";
 
 interface PaymentMethodBadgeProps {
   method: PaymentMethod;
@@ -8,19 +7,22 @@ interface PaymentMethodBadgeProps {
 
 const methodConfig: Record<
   PaymentMethod,
-  { label: string; color: string }
+  {
+    label: string;
+    tone: "success" | "brand" | "warning";
+  }
 > = {
   CASH: {
     label: "Cash",
-    color: "success",
+    tone: "brand",
   },
   TRANSFER: {
     label: "Transfer",
-    color: "processing",
+    tone: "success",
   },
   QRIS: {
     label: "QRIS",
-    color: "purple",
+    tone: "warning",
   },
 };
 
@@ -29,5 +31,9 @@ export default function PaymentMethodBadge({
 }: PaymentMethodBadgeProps) {
   const config = methodConfig[method];
 
-  return <Tag color={config.color}>{config.label}</Tag>;
+  return (
+    <Badge tone={config.tone} dot>
+      {config.label}
+    </Badge>
+  );
 }

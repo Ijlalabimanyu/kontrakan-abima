@@ -1,61 +1,73 @@
 "use client";
 
-import { DatePicker, Input, Select } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { Search } from "lucide-react";
 import dayjs from "dayjs";
 
-import { PaymentMethod } from "@/services/payments/payment.interface";
+import { Input, Select, DatePicker } from "@/components/ui";
+import {
+  PaymentFilterValues,
+  PaymentMethod,
+} from "@/services/payments/interface";
 
 interface PaymentFilterProps {
-  search: string;
-  paymentMethod: PaymentMethod | null;
-  paymentDate: string | null;
-  onSearchChange: (value: string) => void;
-  onMethodChange: (value: PaymentMethod | null) => void;
-  onDateChange: (value: string | null) => void;
+  filters: PaymentFilterValues;
+  onChange: (filters: PaymentFilterValues) => void;
 }
 
-const methodOptions: { label: string; value: PaymentMethod }[] = [
+const methodOptions: {
+  label: string;
+  value: PaymentMethod;
+}[] = [
   { label: "Cash", value: "CASH" },
   { label: "Transfer", value: "TRANSFER" },
   { label: "QRIS", value: "QRIS" },
 ];
 
 export default function PaymentFilter({
-  search,
-  paymentMethod,
-  paymentDate,
-  onSearchChange,
-  onMethodChange,
-  onDateChange,
+  filters,
+  onChange,
 }: PaymentFilterProps) {
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+    <div className="grid w-full min-w-0 grid-cols-1 gap-3 md:grid-cols-[340px_180px_200px]">
       <Input
         allowClear
-        prefix={<SearchOutlined />}
-        placeholder="Cari pembayaran, invoice, penyewa..."
-        value={search}
-        onChange={(event) => onSearchChange(event.target.value)}
+        prefix={<Search size={16} />}
+        className="w-full min-w-0"
+        placeholder="Cari pembayaran, invoice, atau penyewa..."
+        value={filters.search}
+        onChange={(event) =>
+          onChange({
+            ...filters,
+            search: event.target.value,
+          })
+        }
       />
 
       <Select
         allowClear
-        className="w-full"
-        placeholder="Semua Metode"
-        value={paymentMethod}
+        className="w-full min-w-0"
+        placeholder="Semua metode"
+        value={filters.payment_method}
         options={methodOptions}
-        onChange={(value) => onMethodChange(value ?? null)}
+        onChange={(value) =>
+          onChange({
+            ...filters,
+            payment_method: value ?? null,
+          })
+        }
       />
 
       <DatePicker
         allowClear
-        className="w-full"
-        placeholder="Semua Tanggal"
+        className="w-full min-w-0!"
+        placeholder="Semua tanggal"
         format="DD MMMM YYYY"
-        value={paymentDate ? dayjs(paymentDate) : null}
+        value={filters.payment_date ? dayjs(filters.payment_date) : null}
         onChange={(date) =>
-          onDateChange(date ? date.format("YYYY-MM-DD") : null)
+          onChange({
+            ...filters,
+            payment_date: date ? date.format("YYYY-MM-DD") : null,
+          })
         }
       />
     </div>

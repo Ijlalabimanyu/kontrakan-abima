@@ -1,20 +1,35 @@
-import { getTenants } from "@/features/tenants/services/tenant.service";
-import TenantTable from "@/features/tenants/components/TenantTable";
+import { Suspense } from "react";
+import { connection } from "next/server";
+import { getTenants } from "@/services/tenants/service";
+import TenantTable from "@/features/tenants/TenantTable";
+import TenantsLoading from "@/features/tenants/TenantLoading";
 
-export default async function TenantsPage() {
+async function TenantsContent() {
+  await connection();
+
   const tenants = await getTenants();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Manajemen Penyewa</h1>
+        <h1 className="mt-1 text-2xl font-bold text-foreground">
+          Manajemen Penyewa
+        </h1>
 
-        <p className="text-sm text-slate-500">
+        <p className="mt-1 text-sm text-muted">
           Kelola informasi dan data penyewa kontrakan Anda.
         </p>
       </div>
 
       <TenantTable tenants={tenants} />
     </div>
+  );
+}
+
+export default function TenantsPage() {
+  return (
+    <Suspense fallback={<TenantsLoading />}>
+      <TenantsContent />
+    </Suspense>
   );
 }

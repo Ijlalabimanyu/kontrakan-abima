@@ -4,7 +4,7 @@ import {
   PaymentFilterValues,
   PaymentInvoiceOption,
   PaymentModel,
-} from "./payment.interface";
+} from "./interface";
 
 interface InvoiceRelation {
   id: string;
@@ -237,10 +237,10 @@ export async function getPayments(
       ? relations.contractMap.get(invoice.contract_id)
       : null;
     const room = contract ? relations.roomMap.get(contract.room_id) : null;
-    const tenant = contract ? relations.tenantMap.get(contract.tenant_id) : null;
-    const property = room
-      ? relations.propertyMap.get(room.property_id)
+    const tenant = contract
+      ? relations.tenantMap.get(contract.tenant_id)
       : null;
+    const property = room ? relations.propertyMap.get(room.property_id) : null;
 
     return {
       ...payment,
@@ -349,10 +349,7 @@ export async function getPayableInvoices(): Promise<PaymentInvoiceOption[]> {
         ? relations.tenantMap.get(contract.tenant_id)
         : null;
       const paidAmount = paidAmountMap.get(invoice.id) ?? 0;
-      const remainingAmount = Math.max(
-        0,
-        Number(invoice.amount) - paidAmount,
-      );
+      const remainingAmount = Math.max(0, Number(invoice.amount) - paidAmount);
 
       return {
         id: invoice.id,

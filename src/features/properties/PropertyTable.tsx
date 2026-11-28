@@ -16,8 +16,9 @@ import {
   updatePropertyAction,
 } from "@/services/properties/actions";
 import { ColumnsType } from "antd/es/table";
-import PropertyCard from "./components/PropertyCard";
+import PropertyCard from "./PropertyCard";
 import PropertyForm from "./PropertyForm";
+import { FormatDate } from "@/lib/utils";
 
 const { Text } = Typography;
 
@@ -25,29 +26,14 @@ interface PropertyTableProps {
   properties: PropertyModel[];
 }
 
-function formatPropertyDate(value: string): string {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Tanggal tidak tersedia";
-  }
-
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-  }).format(date);
-}
-
 export default function PropertyTable({ properties }: PropertyTableProps) {
   const [messageApi, contextHolder] = message.useMessage();
-
   const router = useRouter();
 
   // Property Form
   const [modalOpen, setModalOpen] = useState(false);
-
   const [selectedProperty, setSelectedProperty] =
     useState<PropertyModel | null>(null);
-
   const [formLoading, setFormLoading] = useState(false);
 
   // Delete Confirmation
@@ -59,15 +45,10 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
 
   // Search & Pagination
   const [search, setSearch] = useState("");
-
   const [currentPage, setCurrentPage] = useState(1);
-
   const [pageSize, setPageSize] = useState(10);
 
-  // -----------------------------------------
   // Search
-  // -----------------------------------------
-
   const filteredProperties = useMemo(() => {
     const query = search.trim().toLocaleLowerCase("id-ID");
 
@@ -88,10 +69,7 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
     });
   }, [properties, search]);
 
-  // -----------------------------------------
   // Pagination
-  // -----------------------------------------
-
   const totalPages = Math.max(
     1,
     Math.ceil(filteredProperties.length / pageSize),
@@ -111,10 +89,7 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
     setCurrentPage(1);
   };
 
-  // -----------------------------------------
   // Add & Edit
-  // -----------------------------------------
-
   const handleAdd = () => {
     setSelectedProperty(null);
     setModalOpen(true);
@@ -146,10 +121,8 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
       }
 
       messageApi.success(result.message);
-
       setModalOpen(false);
       setSelectedProperty(null);
-
       router.refresh();
     } catch {
       messageApi.error("Terjadi kesalahan. Silakan coba kembali.");
@@ -158,17 +131,13 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
     }
   };
 
-  // -----------------------------------------
   // Delete
-  // -----------------------------------------
-
   const handleDelete = async () => {
     if (!deleteTarget || deletingPropertyId) {
       return;
     }
 
     const propertyId = deleteTarget.id;
-
     setDeletingPropertyId(propertyId);
 
     try {
@@ -186,9 +155,7 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
       }
 
       messageApi.success(result.message);
-
       setDeleteTarget(null);
-
       router.refresh();
     } catch {
       messageApi.error("Gagal menghapus properti.");
@@ -197,10 +164,7 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
     }
   };
 
-  // -----------------------------------------
   // Table Columns
-  // -----------------------------------------
-
   const columns: ColumnsType<PropertyModel> = [
     {
       title: "No",
@@ -240,7 +204,7 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
       key: "created_at",
       width: 150,
       render: (date: string) => (
-        <span className="text-sm text-muted">{formatPropertyDate(date)}</span>
+        <span className="text-sm text-muted">{FormatDate(date)}</span>
       ),
     },
     {
@@ -295,6 +259,8 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
               onClick={handleAdd}
               icon={<PlusOutlined />}
               disabled={formLoading || isDeleting}
+              block
+              className="sm:w-auto!"
             >
               Tambah Properti
             </Button>
@@ -341,8 +307,6 @@ export default function PropertyTable({ properties }: PropertyTableProps) {
             />
           )}
         </Card>
-
-        {/* Mobile Property Cards */}
 
         {/* Mobile Property Cards */}
         <div className="md:hidden">

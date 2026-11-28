@@ -1,72 +1,100 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Button, Empty, Table, Typography } from "antd";
+import { Eye, Plus } from "lucide-react";
 import type { ColumnsType } from "antd/es/table";
-import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { Button, Card, EmptyState } from "@/components/ui";
+import { DataTable, TablePagination, TableToolbar } from "@/components/tables";
 
-import {
+import type {
   PaymentFilterValues,
   PaymentInvoiceOption,
   PaymentMethod,
   PaymentModel,
-} from "@/services/payments/payment.interface";
+} from "@/services/payments/interface";
 import PaymentFilter from "./PaymentFilter";
 import PaymentForm from "./PaymentForm";
 import PaymentMethodBadge from "./PaymentMethodBadge";
 import PaymentDetailModal from "./PaymentDetailModal";
+import PaymentCard from "./PaymentCard";
+
+import { CurrencyFormatter } from "@/lib/utils";
 
 interface PaymentTableProps {
   payments: PaymentModel[];
   payableInvoices: PaymentInvoiceOption[];
 }
 
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
+const initialFilters: PaymentFilterValues = {
+  search: "",
+  payment_method: null,
+  payment_date: null,
+};
 
 export default function PaymentTable({
   payments,
   payableInvoices,
 }: PaymentTableProps) {
-  const [filters, setFilters] = useState<PaymentFilterValues>({
-    search: "",
-    payment_method: null,
-    payment_date: null,
-  });
+  const [filters, setFilters] = useState<PaymentFilterValues>(initialFilters);
+
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedPayment, setSelectedPayment] =
-    useState<PaymentModel | null>(null);
-
-  const filteredPayments = useMemo(
-    () =>
-      payments.filter((payment) => {
-        const keyword = filters.search.trim().toLowerCase();
-        const matchesSearch =
-          !keyword ||
-          [
-            payment.payment_number,
-            payment.invoice_number,
-            payment.tenant_name,
-            payment.tenant_phone,
-            payment.room_number,
-            payment.property_name,
-          ].some((value) => value.toLowerCase().includes(keyword));
-        const matchesMethod =
-          !filters.payment_method ||
-          payment.payment_method === filters.payment_method;
-        const matchesDate =
-          !filters.payment_date ||
-          payment.payment_date === filters.payment_date;
-
-        return matchesSearch && matchesMethod && matchesDate;
-      }),
-    [payments, filters],
+  const [selectedPayment, setSelectedPayment] = useState<PaymentModel | null>(
+    null,
   );
+
+  const [requestedPage, setRequestedPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const filteredPayments = useMemo(() => {
+    const keyword = filters.search.trim().toLowerCase();
+
+    return payments.filter((payment) => {
+      const searchableValues = [
+        payment.payment_number,
+        payment.invoice_number,
+        payment.tenant_name,
+        payment.tenant_phone,
+        payment.room_number,
+        payment.property_name,
+      ];
+
+      const matchesSearch =
+        !keyword ||
+        searchableValues.some((value) =>
+          (value ?? "").toLowerCase().includes(keyword),
+        );
+
+      const matchesMethod =
+        !filters.payment_method ||
+        payment.payment_method === filters.payment_method;
+
+      const matchesDate =
+        !filters.payment_date || payment.payment_date === filters.payment_date;
+
+      return matchesSearch && matchesMethod && matchesDate;
+    });
+  }, [payments, filters]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredPayments.length / pageSize));
+
+  const currentPage = Math.min(requestedPage, totalPages);
+
+  const paginatedPayments = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+
+    return filteredPayments.slice(startIndex, startIndex + pageSize);
+  }, [filteredPayments, currentPage, pageSize]);
+
+  const handleFilterChange = (value: PaymentFilterValues) => {
+    setFilters(value);
+    setRequestedPage(1);
+  };
+
+  const handlePageChange = (page: number, nextPageSize: number) => {
+    setRequestedPage(page);
+    setPageSize(nextPageSize);
+  };
 
   const columns: ColumnsType<PaymentModel> = [
     {
@@ -74,7 +102,7 @@ export default function PaymentTable({
       dataIndex: "payment_number",
       key: "payment_number",
       render: (value: string) => (
-        <span className="font-medium">{value}</span>
+        <span className="font-medium text-primary">{value}</span>
       ),
     },
     {
@@ -92,10 +120,8 @@ export default function PaymentTable({
       key: "room",
       render: (_, record) => (
         <div>
-          <div>{record.property_name}</div>
-          <Typography.Text type="secondary">
-            {record.room_number}
-          </Typography.Text>
+          <p className="font-medium text-foreground">{record.property_name}</p>
+          <p className="text-xs text-muted">Kamar {record.room_number}</p>
         </div>
       ),
     },
@@ -117,20 +143,20 @@ export default function PaymentTable({
       key: "amount",
       align: "right",
       render: (value: number) => (
-        <span className="font-medium">{formatCurrency(value)}</span>
+        <span className="font-medium text-foreground">
+          {CurrencyFormatter.format(value)}
+        </span>
       ),
     },
     {
       title: "Aksi",
       key: "action",
       align: "center",
+      width: 100,
+      fixed: "right",
       render: (_, record) => (
-        <Button
-          type="text"
-          icon={<EyeOutlined />}
-          onClick={() => setSelectedPayment(record)}
-        >
-          Detail
+        <Button variant="ghost" onClick={() => setSelectedPayment(record)}>
+          <Eye size={16} />
         </Button>
       ),
     },
@@ -138,54 +164,85 @@ export default function PaymentTable({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-semibold">Manajemen Pembayaran</h1>
-          <p className="text-sm text-slate-500">
-            Kelola transaksi pembayaran sewa kontrakan.
-          </p>
-        </div>
+      <TableToolbar
+        title="Daftar Pembayaran"
+        description={`${filteredPayments.length} dari ${payments.length} pembayaran ditampilkan.`}
+        filters={
+          <PaymentFilter filters={filters} onChange={handleFilterChange} />
+        }
+        actions={
+          <Button
+            variant="primary"
+            onClick={() => setFormOpen(true)}
+            disabled={!payableInvoices.length}
+            block
+            className="sm:w-auto!"
+          >
+            <Plus size={17} />
+            Catat Pembayaran
+          </Button>
+        }
+      />
 
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          disabled={!payableInvoices.length}
-          onClick={() => setFormOpen(true)}
-        >
-          Catat Pembayaran
-        </Button>
+      {/* Desktop */}
+      <Card className="hidden md:block">
+        <DataTable
+          rowKey="id"
+          columns={columns}
+          dataSource={paginatedPayments}
+          pagination={false}
+          scroll={{ x: 1200 }}
+          locale={{
+            emptyText: "Belum ada transaksi pembayaran",
+          }}
+        />
+
+        {filteredPayments.length > 0 && (
+          <TablePagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={filteredPayments.length}
+            onChange={handlePageChange}
+          />
+        )}
+      </Card>
+
+      {/* Mobile */}
+      <div className="space-y-5 md:hidden">
+        {paginatedPayments.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 gap-4">
+              {paginatedPayments.map((payment) => (
+                <PaymentCard
+                  key={payment.id}
+                  payment={payment}
+                  onDetail={setSelectedPayment}
+                />
+              ))}
+            </div>
+
+            {filteredPayments.length > 0 && (
+              <div className="pt-1">
+                <TablePagination
+                  current={currentPage}
+                  pageSize={pageSize}
+                  total={filteredPayments.length}
+                  onChange={handlePageChange}
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <Card>
+            <EmptyState
+              title="Belum ada pembayaran"
+              description="Transaksi pembayaran yang sesuai dengan pencarian atau filter belum tersedia."
+            />
+          </Card>
+        )}
       </div>
 
-      <PaymentFilter
-        search={filters.search}
-        paymentMethod={filters.payment_method}
-        paymentDate={filters.payment_date}
-        onSearchChange={(value) =>
-          setFilters((previous) => ({ ...previous, search: value }))
-        }
-        onMethodChange={(value) =>
-          setFilters((previous) => ({ ...previous, payment_method: value }))
-        }
-        onDateChange={(value) =>
-          setFilters((previous) => ({ ...previous, payment_date: value }))
-        }
-      />
-
-      <Table<PaymentModel>
-        rowKey="id"
-        columns={columns}
-        dataSource={filteredPayments}
-        scroll={{ x: 1200 }}
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `Total ${total} pembayaran`,
-        }}
-        locale={{
-          emptyText: <Empty description="Belum ada transaksi pembayaran" />,
-        }}
-      />
-
+      {/* Modals */}
       <PaymentForm
         open={formOpen}
         invoices={payableInvoices}

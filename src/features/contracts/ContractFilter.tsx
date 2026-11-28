@@ -1,8 +1,8 @@
 "use client";
 
-import { Input, Select, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { Search } from "lucide-react";
 import { ContractFilterValues } from "@/services/contract/interface";
+import { Input, Select } from "@/components/ui";
 
 interface ContractFilterProps {
   filters: ContractFilterValues;
@@ -14,12 +14,13 @@ export default function ContractFilter({
   onChange,
 }: ContractFilterProps) {
   return (
-    <Space wrap className="w-full">
+    <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:min-w-140 sm:grid-cols-[minmax(0,1fr)_200px]">
+      {/* Search */}
       <Input
         allowClear
-        prefix={<SearchOutlined />}
-        placeholder="Cari penyewa atau kamar..."
-        className="!w-full sm:!w-72"
+        className="w-full min-w-0"
+        placeholder="Cari penyewa, properti, atau kamar..."
+        prefix={<Search size={16} className="text-muted" />}
         value={filters.search}
         onChange={(event) =>
           onChange({
@@ -29,11 +30,12 @@ export default function ContractFilter({
         }
       />
 
+      {/* Status */}
       <Select
         allowClear
+        className="w-full min-w-0"
         placeholder="Semua status"
-        className="w-full sm:!w-44"
-        value={filters.status}
+        value={filters.status ?? undefined}
         options={[
           { label: "Aktif", value: "ACTIVE" },
           { label: "Selesai", value: "COMPLETED" },
@@ -46,6 +48,6 @@ export default function ContractFilter({
           })
         }
       />
-    </Space>
+    </div>
   );
 }
